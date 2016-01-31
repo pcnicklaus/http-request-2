@@ -1,28 +1,56 @@
 var React = require('react');
 var ListItem = require('./ListItem.jsx');
-var HTTP = require('../services/httpService.js');
+var Reflux = require('reflux');
+var Actions = require('../reflux/actions.jsx');
+var IngredientStore = require('../reflux/ingredients-store.jsx');
 
 var List = React.createClass({
+
+   //publically available
+   // listen for any changes in the store
+   mixins: [Reflux.listenTo(IngredientStore, 'onChange')],
+
    getInitialState: function () {
-      return {ingredients: []};
+      return {ingredients: [], newText: ''};
    },
-
    componentWillMount: function () {
-      HTTP.get('/ingredients')
-         .then(function(data) {
-            // console.log('Data: ', data)
-            this.setState({
-               ingredients: data
-            });
-         }.bind(this));
+      Actions.getIngredients();
    },
-
+   onChange: function(event, ingredients) {
+      this.setState({ingredients: ingredients});
+   },
+   onInputChange: function(event) {
+      this.setState({newText: event.target.value})
+   },
+   onClick: function (event) {
+      if (this.state.newText) {
+         Actions.postIngredient(this.state.newText);
+      }
+      this.setState({newText: ''})
+   },
    render: function() {
         var listItems = this.state.ingredients.map(function(item) {
-            return <ListItem key={item.id} ingredient={item.text} />;
+            return <ListItem
+               key={item.id} ingredient={item.text}
+                   />
         });
 
-        return (<ul>{listItems}</ul>);
+        return (
+           <div>
+             <input
+                placeholder="Add Item"
+                value={this.state.newText}
+                onChange={this.onInputChange}
+             />
+
+             <button
+                onClick={this.onClick}>
+                AddItem
+             </button>
+
+               <ul>{listItems}</ul>
+           </div>
+        );
     }
 });
 

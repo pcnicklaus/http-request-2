@@ -14,12 +14,26 @@ var IngredientStore = Reflux.createStore({
    },
 
    postIngredient: function(text) {
-      // posted ingred to server
-      // got a successful callback
-      // trigger is reflux
+      if(!this.ingredients) {
+         this.ingredients = [];
+      }
+
+      var ingredient = {
+         'text': text,
+         'id': Math.floor(Date.now() / 1000) + text
+      };
+      //push it to a local array
+      this.ingredients.push(ingredient);
+      //update the List
+      this.fireUpdate();
+
+      HTTP.post('/ingredients', ingredient)
+         .then(function(response) {
+            this.getIngredients();
+         }.bind(this));
 
    },
-   
+
    fireUpdate: function() {
       this.trigger('change', this.ingredients);
    }
