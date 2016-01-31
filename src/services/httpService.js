@@ -6,7 +6,6 @@ var service = {
       // console.log('making request');
       return fetch(baseURL + url)
          .then(function(response) {
-            // console.log('RES: ', response);
             return response.json();
          });
    }

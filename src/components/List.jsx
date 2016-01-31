@@ -7,8 +7,6 @@ var List = React.createClass({
       return {ingredients: []};
    },
 
-   //web requests. when components have mounted. all children have mounted and now the component is ready to go ALL WEB REQUESTS DONE HERE!
-   // calling BIND so THIS is linked to the COMPONENT instead of the function!!!!
    componentWillMount: function () {
       HTTP.get('/ingredients')
          .then(function(data) {
